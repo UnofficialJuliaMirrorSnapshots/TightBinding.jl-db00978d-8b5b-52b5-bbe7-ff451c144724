@@ -1,9 +1,11 @@
-module Plotfuncs
-    using Plots
+#module Plotfuncs
+    using .Plots
     using LinearAlgebra
-    using ..TightBinding
+    using StatsBase
+    #using ..TightBinding
     export plot_lattice_2d,calc_band_plot,plot_DOS,calc_band_plot_finite
     export plot_fermisurface_2D
+    export get_DOS
 
 
     function plot_lattice_2d(lattice)
@@ -110,7 +112,6 @@ module Plotfuncs
         return pls
 
 
-        return pls
     end
 
     function calc_band_plot(klines,lattice)
@@ -158,7 +159,7 @@ module Plotfuncs
         numlines = klines.numlines
         dim = lattice.dim-1
         klength = 0.0
-        vec_k = []
+        vec_k = Float64[]
         numatoms = lattice.numatoms
         N = numatoms*nsites
         energies = zeros(Float64,0,N)
@@ -205,7 +206,14 @@ module Plotfuncs
         return pls
     end
 
+
     function plot_DOS(lattice,nk;nbins=100)
+        dim = lattice.dim
+        hist = get_DOS(lattice,nk;nbins=nbins)
+        pls = bar(hist.edges[1][1:end],hist.weights/nk^dim)
+        return pls
+
+        #=
         dim = lattice.dim
         ham = hamiltonian_k(lattice)
         n = lattice.numatoms
@@ -256,6 +264,7 @@ module Plotfuncs
         pls = histogram(energies,bins=nbins,normalize=true)
 
         return pls
+        =#
     end
 
-end
+#end
